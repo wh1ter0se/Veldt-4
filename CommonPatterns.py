@@ -14,9 +14,9 @@ def reorder_channels(rgb,RGB_order):
 	return rgb[a], rgb[b], rgb[c]
 
 def hsv2rgb(h,s,v,color_bits=None):
-    h = float(h)
-    s = float(s)
-    v = float(v)
+    h = float(h)*(360.0/((2**color_bits)-1)) # convert 0-res to 0-360
+    s = float(s) # 0-1.0
+    v = float(v) # 0-1.0
     h60 = h / 60.0
     h60f = math.floor(h60)
     hi = int(h60f) % 6
@@ -37,22 +37,11 @@ def hsv2rgb(h,s,v,color_bits=None):
     r, g, b = int(r * res), int(g * res), int(b * res)
     return r, g, b
 
-def hsvpos2rgb(h,s,v,pos,color_bits=None):
-	r, g, b = hsv2rgb(h,s,v,color_bits=color_bits)
-	RGB_order = Environments.curr_house.get_RGB_order(pos)
-	r, g, b = reorder_channels([r,g,b],RGB_order)
-	return r, g, b
-
-def solid_color(f_vars,config):
+def solid_color(f_vars,config,room_config):
     client = opc.Client(client_port)
     h = config['hue']
     s = config['saturation']
     b = config['brightness']
-    if 'active_pixels' in config.keys():
-        active_pixels = config['active_pixels']
-    else:
-        active_pixels = range(len(pixels))
-    for x in active_pixels:
-        # pixels[x] = hsvpos2rgb(h,s,b,x,config['color_bits'])
+    for x in pixels: 
         pixels[x] = hsv2rgb(h,s,b,config['color_bits'])
     client.put_pixels(pixels)

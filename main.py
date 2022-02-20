@@ -33,4 +33,10 @@ while True:
         try:
             dm.run()
         except KeyboardInterrupt:
-            break
+            dm.pause()
+            try:
+                choice = input('Resume display mode (y/n)? ')
+                if 'y' in choice.lower():
+                    dm.resume()
+                else: break
+            except KeyboardInterrupt: break

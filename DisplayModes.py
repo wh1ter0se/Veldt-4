@@ -18,7 +18,6 @@ class DisplayMode():
 
     def init(self):
         print(f'[{self.name}]: Init')
-        print('Press CTRL+C to exit the display mode')
 
         self.MSGEQ7 = None
         if 'uses_MSGEQ7' in self.dm_vars.keys():
@@ -31,6 +30,8 @@ class DisplayMode():
 
         if self.init_func is not None:
             self.func_vars, self.config = self.init_func(self.func_vars,self.config)
+        
+        print('Press CTRL+C to exit the display mode')
     
     def run(self):
         if self.MSGEQ7 is not None:
@@ -58,6 +59,9 @@ class DisplayModeList():
         self.label = label
         self.dms = dms
 
+
+## DisplayModes
+
 dm_white_striptest = DisplayMode(
     dm_vars={'label':'White Striptest', 'func':cp.solid_color,'init_func':None},
     config={'hue':0, 'saturation':0, 'brightness':1023,'color_bits':10})
@@ -73,11 +77,13 @@ dm_solid_color = DisplayMode(
     dm_vars={'label':'Solid Color', 'func':cp.solid_color, 'init_func':select_solid_color},
     config={'hue':0, 'saturation':1023, 'brightness':1023,'color_bits':10})
 
+## DisplayModeLists
 
 striptest_dm_list = DisplayModeList('Striptests',
                    [dm_white_striptest])
 standard_dm_list = DisplayModeList('Standard Patterns',
                    [dm_solid_color])
 
+## dm_list_dir
 dm_list_dir = [striptest_dm_list,
                standard_dm_list]
