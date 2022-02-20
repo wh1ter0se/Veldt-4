@@ -37,11 +37,11 @@ def hsv2rgb(h,s,v,color_bits=None):
     r, g, b = int(r * res), int(g * res), int(b * res)
     return r, g, b
 
-def solid_color(f_vars,config,room_config):
+def solid_color(f_vars,config):
     client = opc.Client(client_port)
     h = config['hue']
     s = config['saturation']
     b = config['brightness']
-    for x in pixels: 
+    for x in range(len(pixels)): 
         pixels[x] = hsv2rgb(h,s,b,config['color_bits'])
     client.put_pixels(pixels)
