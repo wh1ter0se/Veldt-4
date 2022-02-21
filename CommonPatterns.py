@@ -69,7 +69,7 @@ def pattern(func):
                 ticker = tick(ticker)
         room, f_vars = func(room,f_vars,config)
         client.put_pixels(room.get_pixels())
-        return f_vars
+        return room, f_vars
     return func_wrapper
 
 
