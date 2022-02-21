@@ -37,10 +37,7 @@ class Strip():
 
     # Color order flipping happens here
     def get_pixel(self,strip_pos):
-        if self.color_order == 'RGB':
-            return self.pixels[strip_pos]
-        else:
-            return self.flip_color_order(self.pixels[strip_pos])
+        return self.flip_color_order(self.pixels[strip_pos])
 
     # Color order flipping happens here
     def get_pixels(self):
