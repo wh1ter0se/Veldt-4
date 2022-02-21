@@ -94,7 +94,7 @@ class Map_3D():
         self.px_buffer = map_config['px_buffer']
 
 class Room():
-    def __init__(self, label, color_bits=10):
+    def __init__(self, label, color_bits=8):
         self.label = label
         self.color_bits = color_bits
 
