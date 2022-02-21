@@ -25,18 +25,22 @@ def pick_dm_list():
     selected_dm_list = dm_lists[choice-1]
     return selected_dm_list
 
-while True:
-    dm_list = pick_dm_list()
-    dm = pick_dm(dm_list)
-    dm.init()
+def main():
+    
     while True:
-        try:
-            dm.run()
-        except KeyboardInterrupt:
-            dm.pause()
+        dm_list = pick_dm_list()
+        dm = pick_dm(dm_list)
+        dm.init()
+        while True:
             try:
-                choice = input('Resume display mode (y/n)? ')
-                if 'y' in choice.lower():
-                    dm.resume()
-                else: break
-            except KeyboardInterrupt: break
+                dm.run()
+            except KeyboardInterrupt:
+                dm.pause()
+                try:
+                    choice = input('Resume display mode (y/n)? ')
+                    if 'y' in choice.lower():
+                        dm.resume()
+                    else: break
+                except KeyboardInterrupt: break
+
+main()

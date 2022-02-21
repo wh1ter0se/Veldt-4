@@ -1,12 +1,15 @@
 import numpy as np
+import CommonPatterns as cp
 
 class Strip():
     # Lengths should be a list of ints in order to support brdiges in the strip
-    def __init__(self, label, lengths:list, port:int, color_order:str='RGB'):
+    def __init__(self, label, lengths:list, port:int, color_order:str='RGB', leds_per_m:int=30):
         self.label = label
         self.port = port
+        self.enabled = True
         self.lengths = lengths
         self.length = sum(lengths)
+        self.pixels = [(0,0,0) for i in range(self.length)]
         self.segments = []
         for index, length in enumerate(lengths):
             label = f'{label}-{index}'
@@ -15,6 +18,30 @@ class Strip():
 
         self.color_order = color_order.upper()
         self.has_W_channel = 'W' in self.color_order
+        self.leds_per_m = leds_per_m
+
+    def set_pixel_rgb(self,strip_pos,rgb):
+        self.pixels[strip_pos] = rgb
+
+    def set_pixel_hsv(self,strip_pos,hsv,color_bits=None):
+        self.pixels[strip_pos] = cp.hsv2rgb(*hsv,color_bits)
+
+    def fill_rgb(self,rgb,color_bits=None):
+        for i in range(self.length):
+            self.set_pixel_rgb(i,rgb,color_bits)
+
+    def fill_hsv(self,hsv,color_bits=None):
+        for i in range(self.length):
+            self.set_pixel_hsv(i,hsv,color_bits)
+
+    def get_pixel(self,strip_pos):
+        return self.pixels[strip_pos]
+
+    def get_pixels(self):
+        return self.pixels
+
+    def get_abs_pos(self,strip_pos):
+        return (self.port*64) + strip_pos
 
     class Segment():
         def __init__(self,label,length,offset,port):
@@ -29,21 +56,36 @@ class Strip():
         def get_abs_pos(self,seg_pos):
             return (self.port*64) + self.offset + seg_pos
 
-    def get_abs_pos(self,strip_pos):
-        return (self.port*64) + strip_pos
+    def as_segment(self):
+        return self.Segment(self.label,self.length,0,self.port)
+    
+# 1 pixel = 3 lights
+# 30 leds/m --> 1 pixel = 10cm ~ 3.94in
+class Map_2D():
+    def __init__(self,map_config):
+        self.label = map_config['label']
+        self.px_height = map_config['px_height']
+        self.px_width = map_config['px_width']
+        self.px_buffer = map_config['px_buffer']
+        self.segments = map_config
+
+class Map_3D():
+    def __init__(self,map_config):
+        self.label = map_config['label']
+        self.px_height = map_config['px_height']
+        self.px_width = map_config['px_width']
+        self.px_depth = map_config['px_depth']
+        self.px_buffer = map_config['px_buffer']
 
 class Room():
-    def __init__(self, label):
+    def __init__(self, label, color_bits=10):
         self.label = label
-        self.canvas_width = 200
-        self.canvas_height = 200
-        self.canvas_buffer = 20
+        self.color_bits = color_bits
 
         self.strip_count = 8
         self.strips = {}
-
-    def add_strip(self,strip):
-        self.strips[strip.label] = strip
+        self.maps_2D = {}
+        self.maps_3D = {}
 
     def add_strips(self,strips):
         if type(strips) == list:
@@ -52,9 +94,44 @@ class Room():
         else:
             self.strips[strip.label] = strips
 
+    def add_2D_map(self,map_config):
+        self.maps_2D[map_config['label']] = Map_2D(map_config)
+
     def get_strip(self,label) -> Strip:
         if label in self.strips.keys():
             return self.strips[label]
+
+    def set_strip_enabled(self,label,enabled=True):
+        if label in self.strips.keys():
+            self.strips[label].enabled = enabled
+
+    def set_color_bits(self,color_bits):
+        self.color_bits = color_bits
+
+    def fill_rgb(self,r,g,b):
+        for strip in self.strips.values():
+            strip.fill_rgb((r,g,b),self.color_bits)
+
+    def fill_hsv(self,h,s,v):
+        for strip in self.strips.values():
+            strip.fill_hsv((h,s,v),self.color_bits)
+
+    def get_pixels(self):
+        pixels = [(0,0,0) for i in range(64*self.strip_count)]
+        for strip in self.strips.values():
+            subpixels = strip.get_pixels()
+            offset = strip.port * 64
+            for i in range(strip.length):
+                pixels[offset+i] = subpixels[i]
+        return pixels
+
+    def get_all_pixel_pos(self):
+        px_pos = []
+        for strip in self.strips.values():
+            for px in range(strip.length):
+                px_pos.append(64*strip.port + px)
+        return px_pos
+
 
 class House():
     def __init__(self, rooms:list=None):
@@ -73,12 +150,12 @@ class House():
 StateHouse = House()
 StateHouse.add_room(Room('Bedroom'))
 StateHouse.get_room('Bedroom').add_strips([
-    Strip('SplashA',[20,9],port=0,color_order='RGB'),
+    Strip('SplashA',[20,9],port=0,color_order='GRB'),
     Strip('SplashB',[20,7,20],port=1,color_order='RGB'),
     Strip('SplashC',[20,7],port=3,color_order='RGB'),
-    Strip('SplashD',[16,7],port=4,color_order='RGB'),
-    Strip('SplashE',[16,7],port=5,color_order='RGB'),
-    Strip('Desk',[16,6,16],port=2,color_order='RGB'),
+    Strip('SplashD',[16,7],port=4,color_order='GRB'),
+    Strip('SplashE',[16,7],port=5,color_order='GRB'),
+    Strip('Desk',[16,6,16],port=2,color_order='GRB'),
     Strip('Halo',[44],port=7,color_order='RGB')])
 
 
