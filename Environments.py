@@ -21,7 +21,8 @@ class Strip():
         self.leds_per_m = leds_per_m
 
     def set_pixel_rgb(self,strip_pos,rgb):
-        self.pixels[strip_pos] = rgb
+        r,g,b = rgb
+        self.pixels[strip_pos] = (int(r),int(g),int(b))
 
     def set_pixel_hsv(self,strip_pos,hsv,color_bits=None):
         self.pixels[strip_pos] = cp.hsv2rgb(*hsv,color_bits)
@@ -49,8 +50,6 @@ class Strip():
         return out
         
     def flip_color_order(self,rgb):
-        if type(rgb) == tuple:
-            rgb = [*rgb]
         r = rgb[self.color_order.index('R')]
         g = rgb[self.color_order.index('G')]
         b = rgb[self.color_order.index('B')]

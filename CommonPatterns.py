@@ -5,7 +5,7 @@ pixels = [(0,0,0)] * 512
 client_port = 'localhost:7892'
 
 # FadeCandy can support 16 bit per channel (0-65536)
-default_color_bits = 10 # 10 bit color (0-1024)
+default_color_bits = 8 # 8 bit color (0-255)
 
 
 ## Utils
@@ -41,7 +41,7 @@ def create_ticker(init,stepover,max,enabled=True):
 def tick(ticker_dict):
     if ticker_dict['enabled']:
         ticker_dict['value'] += ticker_dict['stepover']
-        ticker_dict['value'] %- ticker_dict['max']
+        ticker_dict['value'] %= ticker_dict['max']
     return ticker_dict
 
 ## Decorators

@@ -67,15 +67,15 @@ class DisplayModeList():
 
 dm_white_striptest = DisplayMode(
     dm_vars={'label':'White Striptest', 'func':cp.solid_color,'init_func':None},
-    config={'hue':0, 'saturation':0, 'brightness':1023,'color_bits':10})
+    config={'hue':0, 'saturation':0, 'brightness':1.0,'color_bits':8})
 
 dm_solid_color = DisplayMode(
     dm_vars={'label':'Solid Color', 'func':cp.solid_color, 'init_func':cp.solid_color_init},
-    config={'hue':0, 'saturation':1023, 'brightness':1023,'color_bits':10})
+    config={'hue':0, 'saturation':1.0, 'brightness':1.0,'color_bits':8})
 
 dm_solid_rainbow = DisplayMode(
     dm_vars={'label':'Solid Rainbow', 'func':cp.solid_rainbow, 'init_func':cp.solid_rainbow_init},
-    config={'hue_stepover':2.0, 'saturation':1023, 'brightness':1023,'color_bits':10})
+    config={'hue_stepover':2.0, 'saturation':1.0, 'brightness':1.0,'color_bits':8})
 
 ## DisplayModeLists
 
