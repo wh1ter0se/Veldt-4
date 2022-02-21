@@ -40,11 +40,21 @@ def hsv2rgb(h,s,v,color_bits=None):
     r, g, b = int(r * res), int(g * res), int(b * res)
     return r, g, b
 
+def create_ticker(init,stepover,max,enabled=True):
+    return {'value':init, 'stepover':stepover, 
+            'max':max, 'enabled':enabled}
+
+def tick(ticker_dict):
+    if ticker_dict['enabled']:
+        ticker_dict['value'] += ticker_dict['stepover']
+        ticker_dict['value'] %- ticker_dict['max']
+    return ticker_dict
 
 ## Decorators
 
 def pattern_init(init_func):
     def func_wrapper(room:env.Room, f_vars:dict, config:dict):
+        f_vars['tickers'] = {}
         if 'color_bits' in config.keys():
             room.set_color_bits(config['color_bits'])
         room, f_vars, config = init_func(room,f_vars,config)
@@ -54,6 +64,9 @@ def pattern_init(init_func):
 def pattern(func):
     def func_wrapper(room:env.Room, f_vars:dict, config:dict):
         client = opc.Client(client_port)
+        if 'tickers' in f_vars.keys():
+            for ticker in f_vars['tickers'].values():
+                ticker = tick(ticker)
         room, f_vars = func(room,f_vars,config)
         client.put_pixels(room.get_pixels())
         return f_vars
@@ -72,21 +85,15 @@ def solid_color_init(room:env.Room, f_vars:dict, config:dict):
 
 @pattern
 def solid_color(room:env.Room, f_vars:dict, config:dict):
-    # for x in room.get_all_pixel_pos(): 
-    #     pixels[x] = hsv2rgb(h,s,b,config['color_bits'])
     room.fill_hsv(config['hue'], config['saturation'], config['brightness'])
     return room, f_vars
 
 @pattern_init
 def solid_rainbow_init(room:env.Room, f_vars:dict, config:dict):
-    f_vars['hue_tick'] = 0
-    f_vars['hue_tick_max'] = room.color_bits
-    f_vars['hue_tick_step'] = config['hue_stepover']
+    f_vars['tickers']['hue'] = create_ticker(init=0, stepover=config['hue_stepover'], max=room.color_bits)
     return room, f_vars, config
 
 @pattern
 def solid_rainbow(room:env.Room, f_vars:dict, config:dict):
-    f_vars['hue_tick'] += f_vars['hue_tick_step']
-    f_vars['hue_tick'] %= f_vars['hue_tick_max']
-    room.fill_hsv(f_vars['hue_tick'], config['saturation'], config['brightness'])
+    room.fill_hsv(f_vars['tickers']['hue'], config['saturation'], config['brightness'])
     return room, f_vars

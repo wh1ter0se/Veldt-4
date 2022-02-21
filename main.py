@@ -1,4 +1,4 @@
-import DisplayModes
+import DisplayModes, subprocess, sys
 # import keyboard
 
 def pick_dm(dm_list):
@@ -25,8 +25,20 @@ def pick_dm_list():
     selected_dm_list = dm_lists[choice-1]
     return selected_dm_list
 
+def start_fcserver():
+    print('Starting fcserver')
+    try:
+        p = subprocess.Popen(['sudo','fcserver','fadecandy/server/config.json'],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            universal_newlines=True) #, creationflags=subprocess.CREATE_NEW_CONSOLE
+        return p
+    except:
+        print('Could not start fcserver!')
+
 def main():
-    
+    print(sys.argv)
+    if len(sys.argv) > 1:
+        fcserver = start_fcserver()
     while True:
         dm_list = pick_dm_list()
         dm = pick_dm(dm_list)
