@@ -1,4 +1,4 @@
-import opc, math
+import opc, math, time
 import Environments as env
 
 pixels = [(0,0,0)] * 512
@@ -89,5 +89,9 @@ def solid_rainbow_init(room:env.Room, f_vars:dict, config:dict):
 
 @pattern
 def solid_rainbow(room:env.Room, f_vars:dict, config:dict):
+    if 'last_detect' in f_vars.keys():
+        print(f"lag: {1000.0*(time.time()-f_vars['last_detect'])}ms")
+    f_vars['last_detect'] = time.time()
     room.fill_hsv(f_vars['tickers']['hue']['value'], config['saturation'], config['brightness'])
+    print(f"Hue: {f_vars['tickers']['hue']['value']}")
     return room, f_vars
