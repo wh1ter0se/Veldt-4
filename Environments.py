@@ -34,11 +34,28 @@ class Strip():
         for i in range(self.length):
             self.set_pixel_hsv(i,hsv,color_bits)
 
+    # Color order flipping happens here
     def get_pixel(self,strip_pos):
-        return self.pixels[strip_pos]
+        if self.color_order == 'RGB':
+            return self.pixels[strip_pos]
+        else:
+            return self.flip_color_order(self.pixels[strip_pos])
 
+    # Color order flipping happens here
     def get_pixels(self):
-        return self.pixels
+        out = self.pixels
+        for pixel in out:
+            pixel = self.flip_color_order(pixel)
+        return out
+        
+    def flip_color_order(self,rgb):
+        if type(rgb) == tuple:
+            rgb = [*rgb]
+        r = rgb[self.color_order.index('R')]
+        g = rgb[self.color_order.index('G')]
+        b = rgb[self.color_order.index('B')]
+        return (r,g,b)
+
 
     def get_abs_pos(self,strip_pos):
         return (self.port*64) + strip_pos
@@ -150,13 +167,13 @@ class House():
 StateHouse = House()
 StateHouse.add_room(Room('Bedroom'))
 StateHouse.get_room('Bedroom').add_strips([
-    Strip('SplashA',[20,9],port=0,color_order='GRB'),
-    Strip('SplashB',[20,7,20],port=1,color_order='RGB'),
-    Strip('SplashC',[20,7],port=3,color_order='RGB'),
-    Strip('SplashD',[16,7],port=4,color_order='GRB'),
-    Strip('SplashE',[16,7],port=5,color_order='GRB'),
-    Strip('Desk',[16,6,16],port=2,color_order='GRB'),
-    Strip('Halo',[44],port=7,color_order='RGB')])
+    Strip('SplashA',[20,9],port=0,color_order='GBR'),
+    Strip('SplashB',[20,7,20],port=1,color_order='RBG'),
+    Strip('SplashC',[20,7],port=3,color_order='RBG'),
+    Strip('SplashD',[16,7],port=4,color_order='GBR'),
+    Strip('SplashE',[16,7],port=5,color_order='GBR'),
+    Strip('Desk',[16,6,16],port=2,color_order='GBR'),
+    Strip('Halo',[44],port=7,color_order='RBG')])
 
 
 curr_room = StateHouse.get_room('Bedroom')

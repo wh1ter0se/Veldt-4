@@ -10,12 +10,6 @@ default_color_bits = 10 # 10 bit color (0-1024)
 
 ## Utils
 
-def reorder_channels(rgb,RGB_order):
-	a = RGB_order[0]
-	b = RGB_order[1]
-	c = RGB_order[2]
-	return rgb[a], rgb[b], rgb[c]
-
 def hsv2rgb(h,s,v,color_bits=None):
     h = float(h)*(360.0/((2**color_bits)-1)) # convert 0-res to 0-360
     s = float(s) # 0-1.0
@@ -95,5 +89,5 @@ def solid_rainbow_init(room:env.Room, f_vars:dict, config:dict):
 
 @pattern
 def solid_rainbow(room:env.Room, f_vars:dict, config:dict):
-    room.fill_hsv(f_vars['tickers']['hue'], config['saturation'], config['brightness'])
+    room.fill_hsv(f_vars['tickers']['hue']['value'], config['saturation'], config['brightness'])
     return room, f_vars
