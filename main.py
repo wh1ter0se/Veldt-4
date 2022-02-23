@@ -1,4 +1,4 @@
-import DisplayModes, subprocess, sys
+import DisplayMode, subprocess, sys
 # import keyboard
 
 def pick_dm(dm_list):
@@ -17,7 +17,7 @@ def pick_dm_list():
     i = 1
     dm_lists = []
     print()
-    for dm_list in DisplayModes.dm_list_dir:
+    for dm_list in DisplayMode.dm_list_dir:
         print(str(i) + ') ' + dm_list.label)
         dm_lists.append(dm_list)
         i += 1

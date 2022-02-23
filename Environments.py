@@ -20,12 +20,18 @@ class Strip():
         self.has_W_channel = 'W' in self.color_order
         self.leds_per_m = leds_per_m
 
+    def flip_color_order(self,rgb):
+        r = rgb[self.color_order.index('R')]
+        g = rgb[self.color_order.index('G')]
+        b = rgb[self.color_order.index('B')]
+        return (r,g,b)
+
     def set_pixel_rgb(self,strip_pos,rgb):
-        r,g,b = rgb
+        r,g,b = self.flip_color_order(rgb)
         self.pixels[strip_pos] = (int(r),int(g),int(b))
 
     def set_pixel_hsv(self,strip_pos,hsv,color_bits=None):
-        self.pixels[strip_pos] = cp.hsv2rgb(*hsv,color_bits)
+        self.pixels[strip_pos] = self.flip_color_order(cp.hsv2rgb(*hsv,color_bits))
 
     def fill_rgb(self,rgb,color_bits=None):
         for i in range(self.length):
@@ -37,22 +43,17 @@ class Strip():
 
     # Color order flipping happens here
     def get_pixel(self,strip_pos):
-        return self.flip_color_order(self.pixels[strip_pos])
+        # return self.flip_color_order(self.pixels[strip_pos])
+        return self.pixels[strip_pos]
 
     # Color order flipping happens here
     def get_pixels(self):
-        out = self.pixels
-        for pixel in out:
-            pixel = self.flip_color_order(pixel)
-        return out
+        # out = self.pixels
+        # for pixel in out:
+        #     pixel = self.flip_color_order(pixel)
+        # return out
+        return self.pixels
         
-    def flip_color_order(self,rgb):
-        r = rgb[self.color_order.index('R')]
-        g = rgb[self.color_order.index('G')]
-        b = rgb[self.color_order.index('B')]
-        return (r,g,b)
-
-
     def get_abs_pos(self,strip_pos):
         return (self.port*64) + strip_pos
 

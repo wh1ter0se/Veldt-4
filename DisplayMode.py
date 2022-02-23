@@ -3,22 +3,46 @@ import CommonPatterns as cp
 import Environments as env
 
 class DisplayMode():
-    def __init__(self,dm_vars,config=None):
+    def __init__(self, dm_vars:dict, configs:dict=None):
         self.name = self.__class__.__name__
 
         self.label = dm_vars['label']
         self.func = dm_vars['func']
         self.init_func = dm_vars['init_func']
-
         self.dm_vars = dm_vars
-        self.config = config
+        self.configs = configs
+        self.config = list(configs.values())[0]
         self.func_vars = {}
 
-    def set_config(self,config):
+    def get_config_labels(self) -> str:
+        return self.configs.keys()
+
+    def select_config(self,config_label:str):
+        if config_label in self.configs.keys():
+            self.config = self.configs[config_label]
+
+    def get_config(self,config_label:str=None) -> dict:
+        if config_label is None:
+            return self.config
+        else:
+            return self.configs[config_label]
+
+    def set_config(self,config:dict):
         self.config = config
 
-    def init(self):
-        print(f'[{self.name}]: Init')
+    def init(self, room:env.Room):
+        print(f'[{self.label}]: Starting')
+
+        if len(self.configs) == 1:
+            self.config = list(self.configs.values())[0]
+        else:
+            print(f'Select configuration (0-{len(self.config.keys())}): ')
+            for indx, config in enumerate(self.configs.keys()):
+                print(f'{indx+1}: {config}')
+            choice = self.configs.values(input(''))
+            pass # TODO write support for multiple configs
+
+        self.room = room
 
         self.MSGEQ7 = None
         if 'uses_MSGEQ7' in self.dm_vars.keys():
@@ -28,15 +52,13 @@ class DisplayMode():
                 self.func_vars['levels'] = [-1 for i in range(bands)]
                 self.func_vars['stale_levels'] = []
                 self.stale_level_count = self.dm_vars['stale_level_count']
-        
-        self.room = env.curr_room
 
         if self.init_func is not None:
             self.room, self.func_vars, self.config = self.init_func(self.room,self.func_vars,self.config)
         
         print('Press CTRL+C to exit the display mode')
     
-    def run(self):
+    def iter(self):
         if self.MSGEQ7 is not None:
             levels = self.MSGEQ7.read_levels()
             if levels is not None:
@@ -58,24 +80,31 @@ class DisplayMode():
         print(f'[{self.name}]: Resumed')
 
 class DisplayModeList():
-    def __init__(self,label,dms):
+    def __init__(self, label:str, display_modes:list):
         self.label = label
-        self.dms = dms
+        self.display_modes = display_modes
+
+    def add_display_mode(self, display_mode:DisplayMode):
+        self.display_modes.append(display_mode)
+
+    def add_display_modes(self, display_modes:list):
+        for display_mode in display_modes:
+            self.display_modes.append(display_mode)
 
 
 ## DisplayModes
 
 dm_white_striptest = DisplayMode(
     dm_vars={'label':'White Striptest', 'func':cp.solid_color,'init_func':None},
-    config={'hue':0, 'saturation':0, 'brightness':1.0,'color_bits':8})
+    configs={'default':{'hue':0, 'saturation':0, 'brightness':1.0,'color_bits':8}})
 
 dm_solid_color = DisplayMode(
     dm_vars={'label':'Solid Color', 'func':cp.solid_color, 'init_func':cp.solid_color_init},
-    config={'hue':0, 'saturation':1.0, 'brightness':1.0,'color_bits':8})
+    configs={'default':{'hue':0, 'saturation':1.0, 'brightness':1.0,'color_bits':8}})
 
 dm_solid_rainbow = DisplayMode(
     dm_vars={'label':'Solid Rainbow', 'func':cp.solid_rainbow, 'init_func':cp.solid_rainbow_init},
-    config={'hue_stepover':2.0, 'saturation':1.0, 'brightness':1.0,'color_bits':8})
+    configs={'default':{'hue_stepover':0.6, 'saturation':1.0, 'brightness':1.0,'color_bits':8}})
 
 ## DisplayModeLists
 
