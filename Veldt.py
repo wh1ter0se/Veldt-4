@@ -106,7 +106,6 @@ class Veldt():
                 while True:
                     try:
                         dispmode.iter()
-                        print(room.get_pixels())
                     except KeyboardInterrupt:
                         try:
                             dispmode.pause()
