@@ -73,8 +73,8 @@ def pattern(func):
 def solid_color_init(room:env.Room, f_vars:dict, config:dict):
     print(" 0      60     120    180     240    300")
     print("Red   Violet   Blue   Cyan   Green  Yellow")
-    hue = int(input("Hue (0-360): "))
-    config['hue'] = hue*(room.color_bits / 360.0)
+    hue = float(int(input("Hue (0-360): ")))
+    config['hue'] = int(hue*((2**room.color_bits) / 360.0))
     return room, f_vars, config
 
 @pattern
