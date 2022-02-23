@@ -31,7 +31,8 @@ class Strip():
         self.pixels[strip_pos] = (int(r),int(g),int(b))
 
     def set_pixel_hsv(self,strip_pos,hsv,color_bits=None):
-        self.pixels[strip_pos] = self.flip_color_order(cp.hsv2rgb(*hsv,color_bits))
+        rgb = cp.hsv2rgb(*hsv,color_bits)
+        self.set_pixel_rgb(strip_pos, rgb)
 
     def fill_rgb(self,rgb,color_bits=None):
         for i in range(self.length):
