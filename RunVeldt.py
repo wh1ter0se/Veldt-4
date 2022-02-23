@@ -9,12 +9,12 @@ veldt = Veldt()
 StateHouse = House()
 StateHouse.add_room(Room('Bedroom'))
 StateHouse.get_room('Bedroom').add_strips([
-    Strip('SplashA',[20,9],port=0,color_order='BGR'),
+    Strip('SplashA',[20,9],port=0,color_order='RGB'),
     Strip('SplashB',[20,7,20],port=1,color_order='RBG'),
     Strip('SplashC',[20,7],port=3,color_order='RBG'),
-    Strip('SplashD',[16,7],port=4,color_order='BGR'),
-    Strip('SplashE',[16,7],port=5,color_order='BGR'),
-    Strip('Desk',[16,6,16],port=2,color_order='BGR'),
+    Strip('SplashD',[16,7],port=4,color_order='RGB'),
+    Strip('SplashE',[16,7],port=5,color_order='RGB'),
+    Strip('Desk',[16,6,16],port=2,color_order='RGB'),
     Strip('Halo',[44],port=7,color_order='RBG')])
 veldt.add_houses(StateHouse)
 veldt.add_fadecandys(FadeCandy('fc1','/dev/ttyUSB0'))

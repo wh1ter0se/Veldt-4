@@ -51,8 +51,8 @@ def pattern_init(init_func):
         f_vars['tickers'] = {}
         if 'color_bits' in config.keys():
             room.set_color_bits(config['color_bits'])
-        room, f_vars, config = init_func(room,f_vars,config)
-        return room, f_vars, config
+        room_, f_vars_, config_ = init_func(room,f_vars,config)
+        return room_, f_vars_, config_
     return func_wrapper
 
 def pattern(func):
@@ -61,9 +61,9 @@ def pattern(func):
         if 'tickers' in f_vars.keys():
             for ticker in f_vars['tickers'].values():
                 ticker = tick(ticker)
-        room, f_vars = func(room,f_vars,config)
+        room_, f_vars_ = func(room,f_vars,config)
         client.put_pixels(room.get_pixels())
-        return room, f_vars
+        return room_, f_vars_
     return func_wrapper
 
 
