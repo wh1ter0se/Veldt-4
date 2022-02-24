@@ -21,10 +21,13 @@ class Strip():
         self.leds_per_m = leds_per_m
 
     def flip_color_order(self,rgb):
-        r = rgb[self.color_order.index('R')]
-        g = rgb[self.color_order.index('G')]
-        b = rgb[self.color_order.index('B')]
-        return (r,g,b)
+        r,g,b = rgb
+        if self.color_order == 'RGB': return r,g,b
+        elif self.color_order == 'RBG': return r,b,g
+        elif self.color_order == 'BRG': return b,r,g
+        elif self.color_order == 'BGR': return b,g,r
+        elif self.color_order == 'GBR': return g,b,r
+        elif self.color_order == 'GRB': return g,r,b
 
     def set_pixel_rgb(self,strip_pos,rgb):
         r,g,b = self.flip_color_order(rgb)

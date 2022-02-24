@@ -1,8 +1,7 @@
 def flip_color_order(rgb,color_order):
-    color_order = list(color_order)
-    indexes = [color_order.index('R'), color_order.index('G'), color_order.index('B')]
+    # indexes = [color_order.index('R'), color_order.index('G'), color_order.index('B')]
     r,g,b = rgb
-    print(indexes)
+    # print(indexes)
     if color_order == 'RGB': return r,g,b
     elif color_order == 'RBG': return r,b,g
     elif color_order == 'BRG': return b,r,g
@@ -14,4 +13,4 @@ def flip_color_order(rgb,color_order):
     # b = rgb[indexes[2]]
     # return (r,g,b)
 
-print(flip_color_order([255,0,0],'GBR'))
+print(flip_color_order((255,1,2),'GBR'))
