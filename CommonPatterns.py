@@ -96,7 +96,7 @@ def solid_rainbow(room:env.Room, f_vars:dict, config:dict):
 
 @pattern_init
 def rainbow_init(room:env.Room, f_vars:dict, config:dict):
-    f_vars['tickers']['pos'] = create_ticker(init=0, stepover=config['stepover'], max=2**room.color_bits)
+    f_vars['tickers']['pos'] = create_ticker(init=0, stepover=config['stepover'], max=512)
     return room, f_vars, config
 
 @pattern
