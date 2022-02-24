@@ -44,6 +44,9 @@ class Strip():
     def fill_hsv(self,hsv,color_bits=None):
         for i in range(self.length):
             self.set_pixel_hsv(i,hsv,color_bits)
+    
+    def clear(self):
+        self.fill_rgb((0,0,0))
 
     # Color order flipping happens here
     def get_pixel(self,strip_pos):

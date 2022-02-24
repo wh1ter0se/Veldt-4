@@ -66,7 +66,6 @@ def pattern(func):
         return room_, f_vars_
     return func_wrapper
 
-
 ## Patterns
 
 @pattern_init
@@ -75,6 +74,7 @@ def solid_color_init(room:env.Room, f_vars:dict, config:dict):
     print("Red   Violet   Blue   Cyan   Green  Yellow")
     hue = float(int(input("Hue (0-360): ")))
     config['hue'] = int(hue*((2**room.color_bits) / 360.0))
+    f_vars['lines_printed'] = 3
     return room, f_vars, config
 
 @pattern
@@ -89,9 +89,6 @@ def solid_rainbow_init(room:env.Room, f_vars:dict, config:dict):
 
 @pattern
 def solid_rainbow(room:env.Room, f_vars:dict, config:dict):
-    # if 'last_detect' in f_vars.keys():
-    #     print(f"lag: {1000.0*(time.time()-f_vars['last_detect'])}ms")
     f_vars['last_detect'] = time.time()
     room.fill_hsv(f_vars['tickers']['hue']['value'], config['saturation'], config['brightness'])
-    # print(f"Hue: {f_vars['tickers']['hue']['value']}")
     return room, f_vars
