@@ -24,14 +24,18 @@ veldt.create_display_mode_lists(['Striptests', 'Standard Patterns'])
 veldt.add_display_modes('Striptests', [
     DisplayMode(
         dm_vars={'label':'White Striptest', 'func':cp.solid_color,'init_func':None},
-        configs={'default':{'hue':0, 'saturation':0, 'brightness':1.0,'color_bits':8}})])
+        configs={'default':{'hue':0, 'saturation':0, 'brightness':1.0}})])
 
 veldt.add_display_modes('Standard Patterns', [
     DisplayMode(
         dm_vars={'label':'Solid Color', 'func':cp.solid_color, 'init_func':cp.solid_color_init},
-        configs={'default':{'hue':0, 'saturation':1.0, 'brightness':1.0,'color_bits':8}}),
+        configs={'default':{'hue':0, 'saturation':1.0, 'brightness':1.0}}),
     DisplayMode(
         dm_vars={'label':'Solid Rainbow', 'func':cp.solid_rainbow, 'init_func':cp.solid_rainbow_init},
-        configs={'default':{'hue_stepover':0.6, 'saturation':1.0, 'brightness':1.0,'color_bits':8}})])
+        configs={'default':{'hue_stepover':0.6, 'saturation':1.0, 'brightness':1.0}}),
+    DisplayMode(
+        dm_vars={'label':'Rainbow', 'func':cp.rainbow, 'init_func':cp.rainbow_init},
+        configs={'default':{'stepover':0.6, 'pitch':1.0, 'jump_gaps':True, 
+                 'saturation':1.0, 'brightness':1.0}})])
 
 veldt.start()

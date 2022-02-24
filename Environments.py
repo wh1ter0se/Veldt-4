@@ -92,7 +92,7 @@ class Map_3D():
         self.px_buffer = map_config['px_buffer']
 
 class Room():
-    def __init__(self, label, color_bits=8):
+    def __init__(self, label:str, color_bits:int=8):
         self.label = label
         self.color_bits = color_bits
 
@@ -105,16 +105,16 @@ class Room():
     def add_strips(self, strips:Strip or list):
         if type(strips) == list:
             for strip in strips:
-                self.strips[strips.label] = strip
+                self.strips[strip.label] = strip
         else:
             self.strips[strips.label] = strips
 
     def add_2D_map(self,map_config):
         self.maps_2D[map_config['label']] = Map_2D(map_config)
 
-    def get_strip(self,label) -> Strip:
-        if label in self.strips.keys():
-            return self.strips[label]
+    # def get_strip(self,label) -> Strip:
+    #     if label in self.strips.keys():
+    #         return self.strips[label]
 
     def set_strip_enabled(self,label,enabled=True):
         if label in self.strips.keys():
@@ -162,16 +162,16 @@ class House():
         if room_label in self.rooms.keys():
             return self.rooms[room_label]
 
-StateHouse = House()
-StateHouse.add_room(Room('Bedroom'))
-StateHouse.get_room('Bedroom').add_strips([
-    Strip('SplashA',[20,9],port=0,color_order='GBR'),
-    Strip('SplashB',[20,7,20],port=1,color_order='RBG'),
-    Strip('SplashC',[20,7],port=3,color_order='RBG'),
-    Strip('SplashD',[16,7],port=4,color_order='GBR'),
-    Strip('SplashE',[16,7],port=5,color_order='GBR'),
-    Strip('Desk',[16,6,16],port=2,color_order='GBR'),
-    Strip('Halo',[44],port=7,color_order='RBG')])
+# StateHouse = House()
+# StateHouse.add_room(Room('Bedroom'))
+# StateHouse.get_room('Bedroom').add_strips([
+#     Strip('SplashA',[20,9],port=0,color_order='GBR'),
+#     Strip('SplashB',[20,7,20],port=1,color_order='RBG'),
+#     Strip('SplashC',[20,7],port=3,color_order='RBG'),
+#     Strip('SplashD',[16,7],port=4,color_order='GBR'),
+#     Strip('SplashE',[16,7],port=5,color_order='GBR'),
+#     Strip('Desk',[16,6,16],port=2,color_order='GBR'),
+#     Strip('Halo',[44],port=7,color_order='RBG')])
 
 
-curr_room = StateHouse.get_room('Bedroom')
+# curr_room = StateHouse.get_room('Bedroom')
