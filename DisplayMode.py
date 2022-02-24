@@ -56,7 +56,10 @@ class DisplayMode():
         if self.init_func is not None:
             self.room, self.func_vars, self.config = self.init_func(self.room,self.func_vars,self.config)
         
-        print('Press CTRL+C to exit the display mode')
+        if 'lines_printed' in self.func_vars.keys():
+            print('Press CTRL+C to exit the display mode')
+            return self.func_vars['lines_printed'] 
+        else: return 0
     
     def iter(self):
         if self.MSGEQ7 is not None:
@@ -68,16 +71,18 @@ class DisplayMode():
                 self.func_vars['levels'] = levels
 
         self.room, self.func_vars = self.func(self.room,self.func_vars,self.config)
+        return self.func_vars['lines_printed'] if 'lines_printed' in self.func_vars.keys() else 0
 
     def pause(self):
         if self.MSGEQ7 is not None:
             self.MSGEQ7.close()
-        print(f'[{self.name}]: Paused')
+        print(f'[{self.label}]: Paused')
 
     def resume(self):
         if self.MSGEQ7 is not None:
             self.MSGEQ7.open()
-        print(f'[{self.name}]: Resumed')
+        print(f'[{self.label}]: Resumed')
+        print('Press CTRL+C to exit the display mode')
 
 class DisplayModeList():
     def __init__(self, label:str, display_modes:list):

@@ -1,10 +1,10 @@
-import os
+import sys, os
 import DisplayMode
 from Environments import House, Room
 from FadeCandy import FadeCandy
 
-def cls():
-    os.system('cls' if os.name=='nt' else 'clear')
+# def cls():
+#     os.system('cls' if os.name=='nt' else 'clear')
 
 class Veldt():
     def __init__(self, houses:House or list=None):
@@ -51,61 +51,83 @@ class Veldt():
         def __init__(self, houses:list, dispmode_lists:dict):
             self.houses = houses
             self.dispmode_lists = dispmode_lists
+            self.lines_written = 0
+        
+        def print(self, out:str):
+            self.lines_written += 1
+            print(out)
+
+        def input(self, prompt:str) -> str:
+            self.lines_written += 1
+            return input(prompt)
+
+        def cls(self, more_lines:int=0):
+            for i in range(self.lines_written+more_lines):
+                # sys.stdout.write("\033[F")
+                print('\033[A',' '*40,'\033[A')
+            self.lines_written = 0
+            # os.system('cls' if os.name=='nt' else 'clear')
 
         def pick_house(self) -> House:
             if len(self.houses) == 1:
                 return self.houses[0]
             else:
-                print('MULTIPLE HOUSES NOT YET SUPPORTED') # TODO
+                self.print('[Pick House]')
+                self.print('MULTIPLE HOUSES NOT YET SUPPORTED') # TODO
                 return self.houses[0]
 
         def pick_room(self, house:House) -> Room:
             if len(house.rooms) == 1:
                 return list(house.rooms.values())[0]
             else:
-                print('MULTIPLE ROOMS NOT YET SUPPORTED') # TODO
+                self.print('[Pick Room]')
+                self.print('MULTIPLE ROOMS NOT YET SUPPORTED') # TODO
                 return list(house.rooms.values())[0]
 
         def pick_display_mode_list(self) -> DisplayMode.DisplayModeList:
-            cls()
+            self.cls()
+            self.print('[Main Menu]')
             for indx, dispmode_list in enumerate(self.dispmode_lists):
-                print(f'{str(indx+1)}) {dispmode_list.label}')
-            choice = int(input('Pick directory ID: '))
+                self.print(f'{str(indx+1)}) {dispmode_list.label}')
+            choice = int(self.input('Pick directory ID: '))
             return self.dispmode_lists[choice-1]
 
         def pick_display_mode(self, dispmode_list:DisplayMode.DisplayModeList) -> DisplayMode.DisplayMode:
-            cls()
+            self.cls()
+            self.print('[Pick Display Mode]')
             for indx, dispmode in enumerate(dispmode_list.display_modes):
-                print(f'{str(indx+1)}) {dispmode.label}')
-            choice = int(input('Pick Display Mode ID: '))
+                self.print(f'{str(indx+1)}) {dispmode.label}')
+            choice = int(self.input('Pick Display Mode ID: '))
             return dispmode_list.display_modes[choice-1]
 
         def pause_menu(self):
-            cls()
+            self.cls()
+            self.print('[Pause Menu]')
             options = ['Resume', 'Modify Configuration', 'Exit Display Mode']
             for indx,option in enumerate(options):
-                print(f'{indx+1}) {option}')
-            choice = int(input('Select an option ID: '))
+                self.print(f'{indx+1}) {option}')
+            choice = int(self.input('Select an option ID: '))
             while choice not in [1,2,3]:
-                choice = int(input(f'Select an option ID (1-{len(options)}): '))
+                choice = int(self.input(f'Select an option ID (1-{len(options)}): '))
             if choice == 1: return 'resume'
             elif choice == 2: return 'edit_config'
             elif choice == 3: return 'exit'
             
         def edit_config(self, config:dict):
-            print('NOT YET IMPLEMENTED') # TODO
+            self.print('NOT YET IMPLEMENTED') # TODO
             return config
 
         def start(self):
+            print()
             while True:
                 house = self.pick_house()
                 room = self.pick_room(house)
                 dispmode_list = self.pick_display_mode_list()
                 dispmode = self.pick_display_mode(dispmode_list)
-                dispmode.init(room)
+                self.lines_written += dispmode.init(room) + 1 # display mode init statement
                 while True:
                     try:
-                        dispmode.iter()
+                        self.lines_written += dispmode.iter()
                     except KeyboardInterrupt:
                         try:
                             dispmode.pause()
@@ -117,5 +139,6 @@ class Veldt():
                                 new_conf = self.edit_config(old_conf)
                                 dispmode.set_config(new_conf)
                                 dispmode.resume()
+                                self.lines_written += 1
                             elif choice == 'exit': break
                         except KeyboardInterrupt: break
