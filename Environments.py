@@ -48,17 +48,10 @@ class Strip():
     def clear(self):
         self.fill_rgb((0,0,0))
 
-    # Color order flipping happens here
     def get_pixel(self,strip_pos):
-        # return self.flip_color_order(self.pixels[strip_pos])
         return self.pixels[strip_pos]
 
-    # Color order flipping happens here
     def get_pixels(self):
-        # out = self.pixels
-        # for pixel in out:
-        #     pixel = self.flip_color_order(pixel)
-        # return out
         return self.pixels
         
     def get_abs_pos(self,strip_pos):
@@ -104,16 +97,17 @@ class Room():
         self.color_bits = color_bits
 
         self.strip_count = 8
+        self.pixel_count = 64 * self.strip_count
         self.strips = {}
         self.maps_2D = {}
         self.maps_3D = {}
 
-    def add_strips(self,strips):
+    def add_strips(self, strips:Strip or list):
         if type(strips) == list:
             for strip in strips:
-                self.strips[strip.label] = strip
+                self.strips[strips.label] = strip
         else:
-            self.strips[strip.label] = strips
+            self.strips[strips.label] = strips
 
     def add_2D_map(self,map_config):
         self.maps_2D[map_config['label']] = Map_2D(map_config)

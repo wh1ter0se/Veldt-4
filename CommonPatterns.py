@@ -92,3 +92,8 @@ def solid_rainbow(room:env.Room, f_vars:dict, config:dict):
     f_vars['last_detect'] = time.time()
     room.fill_hsv(f_vars['tickers']['hue']['value'], config['saturation'], config['brightness'])
     return room, f_vars
+
+# @pattern_init
+# def rainbow_init(room:env.Room, f_vars:dict, config:dict):
+#     f_vars['tickers']['pos'] = create_ticker(init=0, stepover=config['hue_stepover'], max=2**room.color_bits)
+#     return room, f_vars, config
