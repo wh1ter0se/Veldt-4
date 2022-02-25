@@ -101,7 +101,7 @@ def rainbow_init(room:env.Room, f_vars:dict, config:dict):
 
 @pattern
 def rainbow(room:env.Room, f_vars:dict, config:dict):
-    offset = f_vars['tickers']['pos']
+    offset = f_vars['tickers']['pos']['value']
     for strip_indx,label in enumerate(room.strips.keys()):
         for i in range(room.strips[label].length):
             hue = (offset+i)*config['pitch'] % (2**room.color_bits)
