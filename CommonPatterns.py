@@ -101,10 +101,10 @@ def rainbow_init(room:env.Room, f_vars:dict, config:dict):
 
 @pattern
 def rainbow(room:env.Room, f_vars:dict, config:dict):
-    offset = 0
+    offset = f_vars['tickers']['pos']
     for strip_indx,label in enumerate(room.strips.keys()):
         for i in range(room.strips[label].length):
-            hue = (offset+i)*config['pitch']
+            hue = (offset+i)*config['pitch'] % (2**room.color_bits)
             room.strips[label].set_pixel_hsv(i,(hue,config['saturation'],config['brightness']))
         room.strips[label] 
         offset += room.strips[label].length if config['jump_gaps'] else strip_indx*64

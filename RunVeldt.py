@@ -35,7 +35,7 @@ veldt.add_display_modes('Standard Patterns', [
         configs={'default':{'hue_stepover':0.6, 'saturation':1.0, 'brightness':1.0}}),
     DisplayMode(
         dm_vars={'label':'Rainbow', 'func':cp.rainbow, 'init_func':cp.rainbow_init},
-        configs={'default':{'stepover':0.6, 'pitch':1.0, 'jump_gaps':True, 
+        configs={'default':{'stepover':2.0, 'pitch':1.0, 'jump_gaps':True, 
                  'saturation':1.0, 'brightness':1.0}})])
 
 veldt.start()
