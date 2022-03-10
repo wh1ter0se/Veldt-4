@@ -100,7 +100,7 @@ class Map_2D():
         for segtup in segment_tuples:
             self.segment_tuples.append(segtup)
 
-    def get_pixels_from_func(self, room, func_2D:Callable[[float,float],tuple]):
+    def get_pixels_from_func(self, func_2D:Callable[[float,float],tuple]):
         '''Applies the mapped pixels to a function which takes
            only X and Y as parameters and returns an RGB tuple.
            Returns the pixel map for a single FadeCandy.'''
@@ -120,11 +120,10 @@ class Map_2D():
                 curr_pos = add_tup(curr_pos, (1,0)) 
 
             for i in range(segment.length):
-                strip_pos = segment.get_strip_pos(i)
+                abs_pos = segment.get_abs_pos(i)
                 rgb = func_2D(*curr_pos)
-                segment.strip.set_pixel_rgb(strip_pos, rgb)
-                # pixels[abs_pos] = func_2D(*curr_pos)
-        return room.get_pixels()
+                pixels[abs_pos] = segment.strip.flip_color_order(rgb)
+        return pixels
 
 class Map_3D():
     def __init__(self,map_config):
