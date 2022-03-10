@@ -120,8 +120,10 @@ class Map_2D():
                 curr_pos = add_tup(curr_pos, (1,0)) 
 
             for i in range(segment.length):
-                abs_pos = segment.get_abs_pos(i)
-                pixels[abs_pos] = func_2D(*curr_pos)
+                strip_pos = segment.get_abs_pos(i)
+                rgb = func_2D(*curr_pos)
+                segment.strip.set_pixel_rgb(strip_pos, rgb)
+                # pixels[abs_pos] = func_2D(*curr_pos)
         return pixels
 
 class Map_3D():
