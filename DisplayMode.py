@@ -84,8 +84,8 @@ class DisplayMode():
         print(f'[{self.label}]: Paused')
 
     def resume(self):
-        if self.MSGEQ7 is not None:
-            self.MSGEQ7.open()
+        if self.room.MSGEQ7 is not None:
+            self.room.MSGEQ7.open()
         print(f'[{self.label}]: Resumed')
         print('Press CTRL+C to exit the display mode')
 

@@ -53,7 +53,7 @@ veldt.add_display_modes('Standard Patterns', [
 veldt.add_display_modes('2D Patterns', [
     DisplayMode(
         dm_vars={'label':'2D Rainbow', 'func':cp.rainbow_2D, 'init_func':cp.rainbow_2D_init},
-        configs={'default':{'stepover':1.0, 'pitch':5.0, 'direction':'up',
+        configs={'default':{'stepover':0.5, 'pitch':3.0, 'direction':'right',
                  'brightness':1.0}})])
 
 veldt.start()
