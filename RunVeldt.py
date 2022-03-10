@@ -21,8 +21,8 @@ map_2D.add_segments([
     (StateHouse.rooms['Bedroom'].get_segment('SplashA-1'), (54,1), 'UP'),
     (StateHouse.rooms['Bedroom'].get_segment('SplashA-2'), (55,20), 'RIGHT'),
     (StateHouse.rooms['Bedroom'].get_segment('SplashB-1'), (65,1), 'UP'),
-    (StateHouse.rooms['Bedroom'].get_segment('SplashB-2'), (66,20), 'RIGHT'),
-    (StateHouse.rooms['Bedroom'].get_segment('SplashB-3'), (74,20), 'DOWN')])
+    (StateHouse.rooms['Bedroom'].get_segment('SplashB-2'), (66,19), 'RIGHT'),
+    (StateHouse.rooms['Bedroom'].get_segment('SplashB-3'), (74,19), 'DOWN')])
 StateHouse.get_room('Bedroom').add_2D_map(map_2D)
 veldt.add_houses(StateHouse)
 veldt.add_fadecandys(FadeCandy('fc1','/dev/ttyUSB0'))
@@ -49,7 +49,7 @@ veldt.add_display_modes('Standard Patterns', [
 veldt.add_display_modes('2D Patterns', [
     DisplayMode(
         dm_vars={'label':'2D Rainbow', 'func':cp.rainbow_2D, 'init_func':cp.rainbow_2D_init},
-        configs={'default':{'stepover':2.0, 'pitch':1.0, 'direction':'up',
+        configs={'default':{'stepover':2.0, 'pitch':1.0, 'direction':'right',
                  'brightness':1.0}})])
 
 veldt.start()

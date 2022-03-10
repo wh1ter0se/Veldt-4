@@ -109,13 +109,14 @@ class Map_2D():
             def add_tup(tup_a, tup_b):
                 return tuple(map(sum, zip(tup_a, tup_b)))
             curr_pos = start_pos
-            if direction == 'UP': 
+            pxdir = direction.lower()
+            if pxdir == 'up': 
                 curr_pos = add_tup(curr_pos, (0,1)) 
-            elif direction == 'DOWN': 
+            elif pxdir == 'down': 
                 curr_pos = add_tup(curr_pos, (0,-1)) 
-            elif direction == 'LEFT': 
+            elif pxdir == 'left': 
                 curr_pos = add_tup(curr_pos, (-1,0)) 
-            elif direction == 'RIGHT': 
+            elif pxdir == 'right': 
                 curr_pos = add_tup(curr_pos, (1,0)) 
 
             for i in range(segment.length):
