@@ -122,10 +122,10 @@ def rainbow_2D(room:env.Room, f_vars:dict, config:dict):
     def func_2D(x:float, y:float):
         offset = f_vars['tickers']['pos']['value']
         pxdir = config['direction'].lower()
-        if pxdir == 'left': offset -= x
-        elif pxdir == 'right': offset += x
-        elif pxdir == 'down': offset -= y
-        elif pxdir == 'up': offset += y
+        if pxdir == 'left': offset += x
+        elif pxdir == 'right': offset -= x
+        elif pxdir == 'down': offset += y
+        elif pxdir == 'up': offset -= y
 
         hue = offset*config['pitch'] % (2**room.color_bits)
         return hsv2rgb(hue, 1.0, config['brightness'])
