@@ -18,7 +18,7 @@ StateHouse.rooms['Bedroom'].add_strips([
     Strip('Halo',[44],port=7,color_order='RGB')])
 map_2D = Map_2D({'label':'Wall Map', 'px_height':32, 'px_width':128})
 map_2D.add_segments([
-    (StateHouse.rooms['Bedroom'].get_segment('Halo-1'), (0,25), 'RIGHT'),
+    (StateHouse.rooms['Bedroom'].get_segment('Halo-1'), (8,25), 'RIGHT'),
     (StateHouse.rooms['Bedroom'].get_segment('SplashA-1'), (54,0), 'UP'),
     (StateHouse.rooms['Bedroom'].get_segment('SplashA-2'), (55,19), 'RIGHT'),
     (StateHouse.rooms['Bedroom'].get_segment('SplashB-1'), (65,0), 'UP'),
