@@ -130,5 +130,5 @@ def rainbow_2D(room:env.Room, f_vars:dict, config:dict):
         hue = offset*config['pitch'] % (2**room.color_bits)
         return hsv2rgb(hue, 1.0, config['brightness'])
 
-    room.pixels = map_2D.get_pixels_from_func(room, func_2D)
+    room.pixels = map_2D.get_pixels_from_func(func_2D)
     return room, f_vars
