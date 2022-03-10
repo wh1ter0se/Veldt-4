@@ -1,3 +1,5 @@
+from typing import Callable
+from MSGEQ7 import MSGEQ7
 import numpy as np
 import CommonPatterns as cp
 
@@ -10,11 +12,11 @@ class Strip():
         self.lengths = lengths
         self.length = sum(lengths)
         self.pixels = [(0,0,0) for i in range(self.length)]
-        self.segments = []
-        for index, length in enumerate(lengths):
-            label = f'{label}-{index}'
-            self.segments.append(self.Segment(
-                label, length, sum(lengths[:index]), port))
+        self.segments = {}
+        for index, length in enumerate(lengths,1):
+            seg_label = f'{label}-{index}' # index starts at 1
+            self.segments[seg_label] = (self.Segment(self,
+                seg_label, length, sum(lengths[:index]), port))
 
         self.color_order = color_order.upper()
         self.has_W_channel = 'W' in self.color_order
@@ -58,7 +60,8 @@ class Strip():
         return (self.port*64) + strip_pos
 
     class Segment():
-        def __init__(self,label,length,offset,port):
+        def __init__(self, strip, label:str, length:int, offset:int ,port:int):
+            self.strip = strip
             self.label = label
             self.length = length
             self.offset = offset
@@ -80,8 +83,43 @@ class Map_2D():
         self.label = map_config['label']
         self.px_height = map_config['px_height']
         self.px_width = map_config['px_width']
-        self.px_buffer = map_config['px_buffer']
-        self.segments = map_config
+        #self.px_buffer = 0 #map_config['px_buffer']
+        self.segment_tuples = []
+
+    def add_segment(self, segment:Strip.Segment, start_pos:tuple, direction:str=None):
+        '''Adds segment info to 2D map.
+           
+           Arguments
+           - segment -  Strip.Segment object to add
+           - start_pos -  (x,y) tuple for segment position 0
+           - direction -  'UP', 'DOWN', 'LEFT', 'RIGHT', or None'''
+        self.segment_tuples.append((segment, start_pos, direction))
+
+    def add_segments(self, segment_tuples:list):
+        '''Adds a list of segment tuples directly.'''
+        for segtup in segment_tuples:
+            self.segment_tuples.append(segtup)
+
+    def get_pixels_from_func(self, func_2D:Callable[[float,float],tuple]):
+        '''Applies the mapped pixels to a function which takes
+           only X and Y as parameters and returns an RGB tuple.
+           Returns the pixel map for a single FadeCandy.'''
+        pixels = [(0,0,0)] * 512
+        for segment, start_pos, direction in self.segment_tuples:
+            curr_pos = start_pos
+            if direction == 'UP': 
+                curr_pos = tuple(map(sum, zip(curr_pos, (0,1))))
+            elif direction == 'DOWN': 
+                curr_pos = tuple(map(sum, zip(curr_pos, (0,-1))))
+            elif direction == 'LEFT': 
+                curr_pos = tuple(map(sum, zip(curr_pos, (-1,0))))
+            elif direction == 'RIGHT': 
+                curr_pos = tuple(map(sum, zip(curr_pos, (1,0))))
+
+            for i in range(segment.length):
+                abs_pos = segment.get_abs_pos(i)
+                pixels[abs_pos] = func_2D(*curr_pos)
+        return pixels
 
 class Map_3D():
     def __init__(self,map_config):
@@ -102,19 +140,29 @@ class Room():
         self.maps_2D = {}
         self.maps_3D = {}
 
+        self.msgeq7 = None
+        self.pixels = None
+
     def add_strips(self, strips:Strip or list):
         if type(strips) == list:
             for strip in strips:
                 self.strips[strip.label] = strip
-        else:
+        elif type(strips) == Strip:
             self.strips[strips.label] = strips
 
-    def add_2D_map(self,map_config):
-        self.maps_2D[map_config['label']] = Map_2D(map_config)
+    def add_2D_map(self, map:Map_2D):
+        self.maps_2D[map.label] = map
 
-    # def get_strip(self,label) -> Strip:
-    #     if label in self.strips.keys():
-    #         return self.strips[label]
+    def add_MSGEQ7(self, msgeq7:MSGEQ7):
+        if self.msgeq7 is not None:
+            print('Overridding MSGEQ7')
+        self.msgeq7 = msgeq7
+
+    def get_segment(self,label):
+        for strip in self.strips.values():
+            if label in strip.segments.keys():
+                return strip.segments[label]
+        raise NameError(f'Segment \'{label}\' not found')
 
     def set_strip_enabled(self,label,enabled=True):
         if label in self.strips.keys():
@@ -132,6 +180,8 @@ class Room():
             strip.fill_hsv((h,s,v),self.color_bits)
 
     def get_pixels(self):
+        if self.pixels is not None:
+            return self.pixels
         pixels = [(0,0,0) for i in range(64*self.strip_count)]
         for strip in self.strips.values():
             subpixels = strip.get_pixels()

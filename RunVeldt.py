@@ -1,7 +1,7 @@
 from Veldt import Veldt
 from DisplayMode import DisplayMode
 from FadeCandy import FadeCandy
-from Environments import House, Room, Strip
+from Environments import House, Room, Map_2D, Strip
 import CommonPatterns as cp
 
 veldt = Veldt()
@@ -16,10 +16,15 @@ StateHouse.get_room('Bedroom').add_strips([
     Strip('SplashE',[16,7],port=5,color_order='BRG'),
     Strip('Desk',[16,6,16],port=2,color_order='BRG'),
     Strip('Halo',[44],port=7,color_order='RGB')])
+map_2D = Map_2D({'label':'Wall Map', 'px_height':32, 'px_width':128})
+map_2D.add_segments([
+    (StateHouse.get_room('Bedroom').get_segment('SplashA-1'), (54,0), 'UP'),
+    (StateHouse.get_room('Bedroom').get_segment('SplashA-2'), (55,20), 'RIGHT')])
+StateHouse.get_room('Bedroom').add_2D_map(map_2D)
 veldt.add_houses(StateHouse)
 veldt.add_fadecandys(FadeCandy('fc1','/dev/ttyUSB0'))
 
-veldt.create_display_mode_lists(['Striptests', 'Standard Patterns'])
+veldt.create_display_mode_lists(['Striptests', 'Standard Patterns', '2D Patterns'])
 
 veldt.add_display_modes('Striptests', [
     DisplayMode(
@@ -37,5 +42,11 @@ veldt.add_display_modes('Standard Patterns', [
         dm_vars={'label':'Rainbow', 'func':cp.rainbow, 'init_func':cp.rainbow_init},
         configs={'default':{'stepover':2.0, 'pitch':1.0, 'jump_gaps':True, 
                  'saturation':1.0, 'brightness':1.0}})])
+
+veldt.add_display_modes('2D Patterns', [
+    DisplayMode(
+        dm_vars={'label':'2D Rainbow', 'func':cp.rainbow_2D, 'init_func':cp.rainbow_2D_init},
+        configs={'default':{'stepover':2.0, 'pitch':1.0, 'direction':'up',
+                 'brightness':1.0}})])
 
 veldt.start()

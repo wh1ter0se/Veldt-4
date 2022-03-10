@@ -109,3 +109,26 @@ def rainbow(room:env.Room, f_vars:dict, config:dict):
         room.strips[label] 
         offset += room.strips[label].length if config['jump_gaps'] else strip_indx*64
     return room, f_vars
+
+@pattern_init
+def rainbow_2D_init(room:env.Room, f_vars:dict, config:dict):
+    f_vars['tickers']['pos'] = create_ticker(init=0, stepover=config['stepover'], max=512)
+    return room, f_vars, config
+
+@pattern ## TODO add support for multiple maps
+def rainbow_2D(room:env.Room, f_vars:dict, config:dict):
+    map_2D = list(room.maps_2D.values())[0] 
+
+    def func_2D(x:float, y:float):
+        offset = f_vars['tickers']['pos']['value']
+        pxdir = config['direction'].lower()
+        if pxdir == 'left': offset -= x
+        elif pxdir == 'right': offset += x
+        elif pxdir == 'down': offset -= y
+        elif pxdir == 'up': offset += y
+
+        hue = offset*config['pitch'] % (2**room.color_bits)
+        return hsv2rgb(hue, 1.0, config['brightness'])
+
+    room.pixels = map_2D.get_pixels_from_func(func_2D)
+    return room, f_vars
