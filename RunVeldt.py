@@ -8,7 +8,7 @@ veldt = Veldt()
 
 StateHouse = House()
 StateHouse.add_room(Room('Bedroom'))
-StateHouse.get_room('Bedroom').add_strips([
+StateHouse.rooms['Bedroom'].add_strips([
     Strip('SplashA',[20,9],port=0,color_order='BRG'),
     Strip('SplashB',[20,7,20],port=1,color_order='RGB'),
     Strip('SplashC',[20,7],port=3,color_order='RGB'),
@@ -18,8 +18,11 @@ StateHouse.get_room('Bedroom').add_strips([
     Strip('Halo',[44],port=7,color_order='RGB')])
 map_2D = Map_2D({'label':'Wall Map', 'px_height':32, 'px_width':128})
 map_2D.add_segments([
-    (StateHouse.get_room('Bedroom').get_segment('SplashA-1'), (54,0), 'UP'),
-    (StateHouse.get_room('Bedroom').get_segment('SplashA-2'), (55,20), 'RIGHT')])
+    (StateHouse.rooms['Bedroom'].get_segment('SplashA-1'), (54,1), 'UP'),
+    (StateHouse.rooms['Bedroom'].get_segment('SplashA-2'), (55,20), 'RIGHT'),
+    (StateHouse.rooms['Bedroom'].get_segment('SplashB-1'), (65,1), 'UP'),
+    (StateHouse.rooms['Bedroom'].get_segment('SplashB-2'), (66,20), 'RIGHT'),
+    (StateHouse.rooms['Bedroom'].get_segment('SplashB-3'), (74,20), 'DOWN')])
 StateHouse.get_room('Bedroom').add_2D_map(map_2D)
 veldt.add_houses(StateHouse)
 veldt.add_fadecandys(FadeCandy('fc1','/dev/ttyUSB0'))

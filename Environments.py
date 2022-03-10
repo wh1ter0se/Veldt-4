@@ -106,15 +106,17 @@ class Map_2D():
            Returns the pixel map for a single FadeCandy.'''
         pixels = [(0,0,0)] * 512
         for segment, start_pos, direction in self.segment_tuples:
+            def add_tup(tup_a, tup_b):
+                return tuple(map(sum, zip(tup_a, tup_b)))
             curr_pos = start_pos
             if direction == 'UP': 
-                curr_pos = tuple(map(sum, zip(curr_pos, (0,1))))
+                curr_pos = add_tup(curr_pos, (0,1)) 
             elif direction == 'DOWN': 
-                curr_pos = tuple(map(sum, zip(curr_pos, (0,-1))))
+                curr_pos = add_tup(curr_pos, (0,-1)) 
             elif direction == 'LEFT': 
-                curr_pos = tuple(map(sum, zip(curr_pos, (-1,0))))
+                curr_pos = add_tup(curr_pos, (-1,0)) 
             elif direction == 'RIGHT': 
-                curr_pos = tuple(map(sum, zip(curr_pos, (1,0))))
+                curr_pos = add_tup(curr_pos, (1,0)) 
 
             for i in range(segment.length):
                 abs_pos = segment.get_abs_pos(i)
@@ -163,6 +165,11 @@ class Room():
             if label in strip.segments.keys():
                 return strip.segments[label]
         raise NameError(f'Segment \'{label}\' not found')
+        
+    def print_segments(self):
+        for strip in self.strips.values():
+            for label in strip.segments.keys():
+                print(label)
 
     def set_strip_enabled(self,label,enabled=True):
         if label in self.strips.keys():
@@ -205,7 +212,7 @@ class House():
             for room in rooms: 
                 self.rooms[room.label] = room
 
-    def add_room(self,room):
+    def add_room(self, room:Room):
         self.rooms[room.label] = room
 
     def get_room(self,room_label) -> Room: 
