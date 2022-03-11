@@ -15,8 +15,9 @@ class Strip():
         self.segments = {}
         for index, length in enumerate(lengths,1):
             seg_label = f'{label}-{index}' # index starts at 1
+            stop = index-1 if index > 0 else 0
             self.segments[seg_label] = (self.Segment(self,
-                seg_label, length, sum(lengths[:index-1]), port))
+                seg_label, length, sum(lengths[:stop]), port))
 
         self.color_order = color_order.upper()
         self.has_W_channel = 'W' in self.color_order
