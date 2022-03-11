@@ -79,8 +79,8 @@ class DisplayMode():
         return self.func_vars['lines_printed'] if 'lines_printed' in self.func_vars.keys() else 0
 
     def pause(self):
-        if self.MSGEQ7 is not None:
-            self.MSGEQ7.close()
+        if self.room.MSGEQ7 is not None:
+            self.room.MSGEQ7.close()
         print(f'[{self.label}]: Paused')
 
     def resume(self):
