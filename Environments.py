@@ -15,9 +15,8 @@ class Strip():
         self.segments = {}
         for index, length in enumerate(lengths,1):
             seg_label = f'{label}-{index}' # index starts at 1
-            stop = index-1 if index > 1 else 1
             self.segments[seg_label] = (self.Segment(self,
-                seg_label, length, sum(lengths[:stop]), port))
+                seg_label, length, sum(lengths[:index-1]), port))
 
         self.color_order = color_order.upper()
         self.has_W_channel = 'W' in self.color_order
@@ -72,7 +71,7 @@ class Strip():
             return self.offset + seg_pos
 
         def get_abs_pos(self,seg_pos):
-            return (self.port*64) + self.offset + seg_pos
+            return (self.port*64) + self.get_strip_pos(seg_pos)
 
     def as_segment(self):
         return self.Segment(self.label,self.length,0,self.port)
@@ -111,16 +110,15 @@ class Map_2D():
                 return tuple(map(sum, zip(tup_a, tup_b)))
             curr_pos = start_pos
             pxdir = direction.lower()
-            if pxdir == 'up': 
-                curr_pos = add_tup(curr_pos, (0,1)) 
-            elif pxdir == 'down': 
-                curr_pos = add_tup(curr_pos, (0,-1)) 
-            elif pxdir == 'left': 
-                curr_pos = add_tup(curr_pos, (-1,0)) 
-            elif pxdir == 'right': 
-                curr_pos = add_tup(curr_pos, (1,0)) 
-
             for i in range(segment.length):
+                if pxdir == 'up': 
+                    curr_pos = add_tup(curr_pos, (0,1)) 
+                elif pxdir == 'down': 
+                    curr_pos = add_tup(curr_pos, (0,-1)) 
+                elif pxdir == 'left': 
+                    curr_pos = add_tup(curr_pos, (-1,0)) 
+                elif pxdir == 'right': 
+                    curr_pos = add_tup(curr_pos, (1,0)) 
                 abs_pos = segment.get_abs_pos(i)
                 rgb = func_2D(*curr_pos)
                 pixels[abs_pos] = segment.strip.flip_color_order(rgb)
