@@ -15,7 +15,7 @@ class Strip():
         self.segments = {}
         for index, length in enumerate(lengths,1):
             seg_label = f'{label}-{index}' # index starts at 1
-            stop = index-1 if index > 0 else 0
+            stop = index-1 if index > 1 else 1
             self.segments[seg_label] = (self.Segment(self,
                 seg_label, length, sum(lengths[:stop]), port))
 
