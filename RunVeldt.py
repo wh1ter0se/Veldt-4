@@ -32,7 +32,7 @@ map_2D.add_segments([
     (StateHouse.rooms['Bedroom'].get_segment('Desk-1'), (66,6), 'NONE'),
     (StateHouse.rooms['Bedroom'].get_segment('Desk-2'), (66,6), 'RIGHT'),
     (StateHouse.rooms['Bedroom'].get_segment('Desk-3'), (74,6), 'NONE'),
-    (StateHouse.rooms['Bedroom'].get_segment('Halo-1'), (0,25), 'RIGHT')])
+    (StateHouse.rooms['Bedroom'].get_segment('Halo-1'), (5,25), 'RIGHT')])
 
 StateHouse.get_room('Bedroom').add_2D_map(map_2D)
 veldt.add_houses(StateHouse)
@@ -59,8 +59,12 @@ veldt.add_display_modes('Standard Patterns', [
 
 veldt.add_display_modes('2D Patterns', [
     DisplayMode(
-        dm_vars={'label':'2D Rainbow', 'func':cp.rainbow_2D, 'init_func':cp.rainbow_2D_init},
+        dm_vars={'label':'Horizontal Rainbow', 'func':cp.rainbow_2D, 'init_func':cp.rainbow_2D_init},
         configs={'default':{'stepover':0.5, 'pitch':3.0, 'direction':'right',
+                 'brightness':1.0}}),
+    DisplayMode(
+        dm_vars={'label':'Vertical Rainbow', 'func':cp.rainbow_2D, 'init_func':cp.rainbow_2D_init},
+        configs={'default':{'stepover':0.5, 'pitch':3.0, 'direction':'down',
                  'brightness':1.0}})])
 
 veldt.start()
