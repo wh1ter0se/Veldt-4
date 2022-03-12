@@ -1,3 +1,5 @@
+from typing import Callable
+from MSGEQ7 import MSGEQ7
 import numpy as np
 import CommonPatterns as cp
 
@@ -10,11 +12,11 @@ class Strip():
         self.lengths = lengths
         self.length = sum(lengths)
         self.pixels = [(0,0,0) for i in range(self.length)]
-        self.segments = []
-        for index, length in enumerate(lengths):
-            label = f'{label}-{index}'
-            self.segments.append(self.Segment(
-                label, length, sum(lengths[:index]), port))
+        self.segments = {}
+        for index, length in enumerate(lengths,1):
+            seg_label = f'{label}-{index}' # index starts at 1
+            self.segments[seg_label] = (self.Segment(self,
+                seg_label, length, sum(lengths[:index-1]), port))
 
         self.color_order = color_order.upper()
         self.has_W_channel = 'W' in self.color_order
@@ -58,7 +60,8 @@ class Strip():
         return (self.port*64) + strip_pos
 
     class Segment():
-        def __init__(self,label,length,offset,port):
+        def __init__(self, strip, label:str, length:int, offset:int ,port:int):
+            self.strip = strip
             self.label = label
             self.length = length
             self.offset = offset
@@ -68,7 +71,7 @@ class Strip():
             return self.offset + seg_pos
 
         def get_abs_pos(self,seg_pos):
-            return (self.port*64) + self.offset + seg_pos
+            return (self.port*64) + self.get_strip_pos(seg_pos)
 
     def as_segment(self):
         return self.Segment(self.label,self.length,0,self.port)
@@ -80,8 +83,46 @@ class Map_2D():
         self.label = map_config['label']
         self.px_height = map_config['px_height']
         self.px_width = map_config['px_width']
-        self.px_buffer = map_config['px_buffer']
-        self.segments = map_config
+        #self.px_buffer = 0 #map_config['px_buffer']
+        self.segment_tuples = []
+
+    def add_segment(self, segment:Strip.Segment, start_pos:tuple, direction:str=None):
+        '''Adds segment info to 2D map.
+           
+           Arguments
+           - segment -  Strip.Segment object to add
+           - start_pos -  (x,y) tuple for segment position 0
+           - direction -  'UP', 'DOWN', 'LEFT', 'RIGHT', or None'''
+        self.segment_tuples.append((segment, start_pos, direction))
+
+    def add_segments(self, segment_tuples:list):
+        '''Adds a list of segment tuples directly.'''
+        for segtup in segment_tuples:
+            self.segment_tuples.append(segtup)
+
+    def get_pixels_from_func(self, func_2D:Callable[[float,float],tuple]):
+        '''Applies the mapped pixels to a function which takes
+           only X and Y as parameters and returns an RGB tuple.
+           Returns the pixel map for a single FadeCandy.'''
+        pixels = [(0,0,0)] * 512
+        for segment, start_pos, direction in self.segment_tuples:
+            def add_tup(tup_a, tup_b):
+                return tuple(map(sum, zip(tup_a, tup_b)))
+            curr_pos = start_pos
+            pxdir = direction.lower()
+            for i in range(segment.length):
+                if pxdir == 'up': 
+                    curr_pos = add_tup(curr_pos, (0,1)) 
+                elif pxdir == 'down': 
+                    curr_pos = add_tup(curr_pos, (0,-1)) 
+                elif pxdir == 'left': 
+                    curr_pos = add_tup(curr_pos, (-1,0)) 
+                elif pxdir == 'right': 
+                    curr_pos = add_tup(curr_pos, (1,0)) 
+                abs_pos = segment.get_abs_pos(i)
+                rgb = func_2D(*curr_pos)
+                pixels[abs_pos] = segment.strip.flip_color_order(rgb)
+        return pixels
 
 class Map_3D():
     def __init__(self,map_config):
@@ -92,7 +133,7 @@ class Map_3D():
         self.px_buffer = map_config['px_buffer']
 
 class Room():
-    def __init__(self, label, color_bits=8):
+    def __init__(self, label:str, color_bits:int=8):
         self.label = label
         self.color_bits = color_bits
 
@@ -102,19 +143,34 @@ class Room():
         self.maps_2D = {}
         self.maps_3D = {}
 
+        self.msgeq7 = None
+        self.pixels = None
+
     def add_strips(self, strips:Strip or list):
         if type(strips) == list:
             for strip in strips:
-                self.strips[strips.label] = strip
-        else:
+                self.strips[strip.label] = strip
+        elif type(strips) == Strip:
             self.strips[strips.label] = strips
 
-    def add_2D_map(self,map_config):
-        self.maps_2D[map_config['label']] = Map_2D(map_config)
+    def add_2D_map(self, map:Map_2D):
+        self.maps_2D[map.label] = map
 
-    def get_strip(self,label) -> Strip:
-        if label in self.strips.keys():
-            return self.strips[label]
+    def add_MSGEQ7(self, msgeq7:MSGEQ7):
+        if self.msgeq7 is not None:
+            print('Overridding MSGEQ7')
+        self.msgeq7 = msgeq7
+
+    def get_segment(self,label):
+        for strip in self.strips.values():
+            if label in strip.segments.keys():
+                return strip.segments[label]
+        raise NameError(f'Segment \'{label}\' not found')
+        
+    def print_segments(self):
+        for strip in self.strips.values():
+            for label in strip.segments.keys():
+                print(label)
 
     def set_strip_enabled(self,label,enabled=True):
         if label in self.strips.keys():
@@ -132,6 +188,8 @@ class Room():
             strip.fill_hsv((h,s,v),self.color_bits)
 
     def get_pixels(self):
+        if self.pixels is not None:
+            return self.pixels
         pixels = [(0,0,0) for i in range(64*self.strip_count)]
         for strip in self.strips.values():
             subpixels = strip.get_pixels()
@@ -155,23 +213,23 @@ class House():
             for room in rooms: 
                 self.rooms[room.label] = room
 
-    def add_room(self,room):
+    def add_room(self, room:Room):
         self.rooms[room.label] = room
 
     def get_room(self,room_label) -> Room: 
         if room_label in self.rooms.keys():
             return self.rooms[room_label]
 
-StateHouse = House()
-StateHouse.add_room(Room('Bedroom'))
-StateHouse.get_room('Bedroom').add_strips([
-    Strip('SplashA',[20,9],port=0,color_order='GBR'),
-    Strip('SplashB',[20,7,20],port=1,color_order='RBG'),
-    Strip('SplashC',[20,7],port=3,color_order='RBG'),
-    Strip('SplashD',[16,7],port=4,color_order='GBR'),
-    Strip('SplashE',[16,7],port=5,color_order='GBR'),
-    Strip('Desk',[16,6,16],port=2,color_order='GBR'),
-    Strip('Halo',[44],port=7,color_order='RBG')])
+# StateHouse = House()
+# StateHouse.add_room(Room('Bedroom'))
+# StateHouse.get_room('Bedroom').add_strips([
+#     Strip('SplashA',[20,9],port=0,color_order='GBR'),
+#     Strip('SplashB',[20,7,20],port=1,color_order='RBG'),
+#     Strip('SplashC',[20,7],port=3,color_order='RBG'),
+#     Strip('SplashD',[16,7],port=4,color_order='GBR'),
+#     Strip('SplashE',[16,7],port=5,color_order='GBR'),
+#     Strip('Desk',[16,6,16],port=2,color_order='GBR'),
+#     Strip('Halo',[44],port=7,color_order='RBG')])
 
 
-curr_room = StateHouse.get_room('Bedroom')
+# curr_room = StateHouse.get_room('Bedroom')

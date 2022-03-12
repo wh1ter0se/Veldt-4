@@ -44,14 +44,17 @@ class DisplayMode():
 
         self.room = room
 
-        self.MSGEQ7 = None
-        if 'uses_MSGEQ7' in self.dm_vars.keys():
-            if self.dm_vars['uses_MSGEQ7']:
-                self.MSGEQ7 = au.MSGEQ7(self.dm_vars['stereo'])
-                bands = 14 if self.dm_vars['stereo'] else 7
-                self.func_vars['levels'] = [-1 for i in range(bands)]
-                self.func_vars['stale_levels'] = []
-                self.stale_level_count = self.dm_vars['stale_level_count']
+        if self.room.msgeq7 is not None:
+            self.room.msgeq7.start_listener()
+
+        # self.MSGEQ7 = None
+        # if 'uses_MSGEQ7' in self.dm_vars.keys():
+        #     if self.dm_vars['uses_MSGEQ7']:
+        #         self.MSGEQ7 = au.MSGEQ7(self.dm_vars['stereo'])
+        #         bands = 14 if self.dm_vars['stereo'] else 7
+        #         self.func_vars['levels'] = [-1 for i in range(bands)]
+        #         self.func_vars['stale_levels'] = []
+        #         self.stale_level_count = self.dm_vars['stale_level_count']
 
         if self.init_func is not None:
             self.room, self.func_vars, self.config = self.init_func(self.room,self.func_vars,self.config)
@@ -62,25 +65,27 @@ class DisplayMode():
         else: return 0
     
     def iter(self):
-        if self.MSGEQ7 is not None:
-            levels = self.MSGEQ7.read_levels()
-            if levels is not None:
-                self.func_vars['stale_levels'].insert(self.func_vars['levels'])
-                if len(self.func_vars['stale_levels']) > self.stale_level_count:
-                    self.stale_levels.pop()
-                self.func_vars['levels'] = levels
+        if self.room.msgeq7 is not None:
+            self.room.msgeq7.update()
+        #     levels = self.MSGEQ7.read_levels()
+        #     if levels is not None:
+        #         self.func_vars['stale_levels'].insert(self.func_vars['levels'])
+        #         if len(self.func_vars['stale_levels']) > self.stale_level_count:
+        #             self.stale_levels.pop()
+        #         self.func_vars['levels'] = levels
 
+        # self.room, self.func_vars = self.func(self.room,self.func_vars,self.config)
         self.room, self.func_vars = self.func(self.room,self.func_vars,self.config)
         return self.func_vars['lines_printed'] if 'lines_printed' in self.func_vars.keys() else 0
 
     def pause(self):
-        if self.MSGEQ7 is not None:
-            self.MSGEQ7.close()
+        if self.room.MSGEQ7 is not None:
+            self.room.MSGEQ7.close()
         print(f'[{self.label}]: Paused')
 
     def resume(self):
-        if self.MSGEQ7 is not None:
-            self.MSGEQ7.open()
+        if self.room.MSGEQ7 is not None:
+            self.room.MSGEQ7.open()
         print(f'[{self.label}]: Resumed')
         print('Press CTRL+C to exit the display mode')
 

@@ -11,6 +11,7 @@ default_color_bits = 8 # 8 bit color (0-255)
 ## Utils
 
 def hsv2rgb(h,s,v,color_bits=None):
+    if color_bits is None: color_bits = default_color_bits
     h = float(h)*(360.0/((2**color_bits)-1)) # convert 0-res to 0-360
     s = float(s) # 0-1.0
     v = float(v) # 0-1.0
@@ -93,7 +94,41 @@ def solid_rainbow(room:env.Room, f_vars:dict, config:dict):
     room.fill_hsv(f_vars['tickers']['hue']['value'], config['saturation'], config['brightness'])
     return room, f_vars
 
-# @pattern_init
-# def rainbow_init(room:env.Room, f_vars:dict, config:dict):
-#     f_vars['tickers']['pos'] = create_ticker(init=0, stepover=config['hue_stepover'], max=2**room.color_bits)
-#     return room, f_vars, config
+@pattern_init
+def rainbow_init(room:env.Room, f_vars:dict, config:dict):
+    f_vars['tickers']['pos'] = create_ticker(init=0, stepover=config['stepover'], max=512)
+    return room, f_vars, config
+
+@pattern
+def rainbow(room:env.Room, f_vars:dict, config:dict):
+    offset = f_vars['tickers']['pos']['value']
+    for strip_indx,label in enumerate(room.strips.keys()):
+        for i in range(room.strips[label].length):
+            hue = (offset+i)*config['pitch'] % (2**room.color_bits)
+            room.strips[label].set_pixel_hsv(i,(hue,config['saturation'],config['brightness']))
+        room.strips[label] 
+        offset += room.strips[label].length if config['jump_gaps'] else strip_indx*64
+    return room, f_vars
+
+@pattern_init
+def rainbow_2D_init(room:env.Room, f_vars:dict, config:dict):
+    f_vars['tickers']['pos'] = create_ticker(init=0, stepover=config['stepover'], max=512)
+    return room, f_vars, config
+
+@pattern ## TODO add support for multiple maps
+def rainbow_2D(room:env.Room, f_vars:dict, config:dict):
+    map_2D = list(room.maps_2D.values())[0] 
+
+    def func_2D(x:float, y:float):
+        offset = f_vars['tickers']['pos']['value']
+        pxdir = config['direction'].lower()
+        if pxdir == 'left': offset += x
+        elif pxdir == 'right': offset -= x
+        elif pxdir == 'down': offset += y
+        elif pxdir == 'up': offset -= y
+
+        hue = offset*config['pitch'] % (2**room.color_bits)
+        return hsv2rgb(hue, 1.0, config['brightness'])
+
+    room.pixels = map_2D.get_pixels_from_func(func_2D)
+    return room, f_vars

@@ -1,6 +1,8 @@
 from serial import Serial
 
 class MSGEQ7():
+
+    ## TODO set the serial up to run on a thread
     
     def __init__(self, port:str, stereo:bool=False, stale_buffer:int=3):
         self.port = port # '/dev/ttyUSB0' usually
