@@ -1,7 +1,7 @@
 import sys, os
 import DisplayMode
-from Environments import House, Room
-from FadeCandy import FadeCandy
+from Room import House, Room
+from devices.FadeCandy import FadeCandy
 
 # def cls():
 #     os.system('cls' if os.name=='nt' else 'clear')
@@ -63,7 +63,6 @@ class Veldt():
 
         def cls(self, more_lines:int=0):
             for i in range(self.lines_written+more_lines):
-                # sys.stdout.write("\033[F")
                 print('\033[A',' '*40,'\033[A')
             self.lines_written = 0
             # os.system('cls' if os.name=='nt' else 'clear')

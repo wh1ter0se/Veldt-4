@@ -1,39 +1,9 @@
 import opc, math, time
-import Environments as env
+import Room as env
+import utils.Color as cu
 
 pixels = [(0,0,0)] * 512
 client_port = 'localhost:7892'
-
-# FadeCandy can support 16 bit per channel (0-65536)
-default_color_bits = 8 # 8 bit color (0-255)
-
-
-## Utils
-
-def hsv2rgb(h,s,v,color_bits=None):
-    if color_bits is None: color_bits = default_color_bits
-    h = float(h)*(360.0/((2**color_bits)-1)) # convert 0-res to 0-360
-    s = float(s) # 0-1.0
-    v = float(v) # 0-1.0
-    h60 = h / 60.0
-    h60f = math.floor(h60)
-    hi = int(h60f) % 6
-    f = h60 - h60f
-    p = v * (1 - s)
-    q = v * (1 - f * s)
-    t = v * (1 - (1 - f) * s)
-    r, g, b = 0, 0, 0
-    if hi == 0: r, g, b = v, t, p
-    elif hi == 1: r, g, b = q, v, p
-    elif hi == 2: r, g, b = p, v, t
-    elif hi == 3: r, g, b = p, q, v
-    elif hi == 4: r, g, b = t, p, v
-    elif hi == 5: r, g, b = v, p, q
-    if color_bits is None:
-        color_bits = default_color_bits
-    res = 2**color_bits
-    r, g, b = int(r * res), int(g * res), int(b * res)
-    return r, g, b
 
 def create_ticker(init,stepover,max,enabled=True):
     return {'value':init, 'stepover':stepover, 
@@ -44,8 +14,6 @@ def tick(ticker_dict):
         ticker_dict['value'] += ticker_dict['stepover']
         ticker_dict['value'] %= ticker_dict['max']
     return ticker_dict
-
-## Decorators
 
 def pattern_init(init_func):
     def func_wrapper(room:env.Room, f_vars:dict, config:dict):
@@ -67,7 +35,7 @@ def pattern(func):
         return room_, f_vars_
     return func_wrapper
 
-## Patterns
+
 
 @pattern_init
 def solid_color_init(room:env.Room, f_vars:dict, config:dict):
@@ -126,9 +94,13 @@ def rainbow_2D(room:env.Room, f_vars:dict, config:dict):
         elif pxdir == 'right': offset -= x
         elif pxdir == 'down': offset += y
         elif pxdir == 'up': offset -= y
+        # else:
+        #     try:
+        #         vecdir = float(pxdir)
+        #         offset += 
 
         hue = offset*config['pitch'] % (2**room.color_bits)
-        return hsv2rgb(hue, 1.0, config['brightness'])
+        return cu.hsv2rgb(hue, 1.0, config['brightness'])
 
     room.pixels = map_2D.get_pixels_from_func(func_2D)
     return room, f_vars

@@ -1,7 +1,7 @@
 from Veldt import Veldt
 from DisplayMode import DisplayMode
-from FadeCandy import FadeCandy
-from Environments import House, Room, Map_2D, Strip
+from devices.FadeCandy import FadeCandy
+from Room import House, Room, Map_2D, Strip
 import CommonPatterns as cp
 
 veldt = Veldt()

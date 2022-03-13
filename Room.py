@@ -1,5 +1,5 @@
 from typing import Callable
-from MSGEQ7 import MSGEQ7
+from devices.MSGEQ7 import MSGEQ7
 import numpy as np
 import CommonPatterns as cp
 
