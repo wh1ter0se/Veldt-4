@@ -61,13 +61,13 @@ class DisplayMode():
         return self.func_vars['lines_printed'] if 'lines_printed' in self.func_vars.keys() else 0
 
     def pause(self):
-        if self.room.MSGEQ7 is not None:
-            self.room.MSGEQ7.close()
+        if self.room.msgeq7 is not None:
+            self.room.msgeq7.close()
         print(f'[{self.label}]: Paused')
 
     def resume(self):
-        if self.room.MSGEQ7 is not None:
-            self.room.MSGEQ7.open()
+        if self.room.msgeq7 is not None:
+            self.room.msgeq7.open()
         print(f'[{self.label}]: Resumed')
         print('Press CTRL+C to exit the display mode')
 

@@ -2,7 +2,7 @@ from skimage import io
 from matplotlib import pyplot as plt
 import Color as cu
 import numpy as np
-import sys
+import sys, math
 sys.path.insert(0, './utils')
 
 def graph_2D_func(func_2D, height, width, stepover, x_start=0, y_start=0):
@@ -25,12 +25,18 @@ def graph_2D_func(func_2D, height, width, stepover, x_start=0, y_start=0):
 
 def func_2D(x:float, y:float, offset:int):
     # offset = 0 #f_vars['tickers']['pos']['value']
-    pxdir = 'right'
+    pxdir = '45'
     if pxdir == 'left': offset += x
     elif pxdir == 'right': offset -= x
     elif pxdir == 'down': offset += y
     elif pxdir == 'up': offset -= y
+    else: # direction in degrees, unit circle
+        try:
+            vecdir = 0.1*(offset * (360.0/255.0)) % 360.0#float(pxdir)
+            offset += x*math.cos(vecdir) + y*math.sin(vecdir)
+        except: pass
+        
     hue = offset*3.0 % (2**8)
     return cu.hsv2rgb(hue, 1.0, 1.0)
 
-graph_2D_func(func_2D, 32, 128, 1)
+graph_2D_func(func_2D, 32, 128, .5)

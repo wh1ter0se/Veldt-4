@@ -1,6 +1,7 @@
 import opc, math, time
 import Room as env
 import utils.Color as cu
+import math
 
 pixels = [(0,0,0)] * 512
 client_port = 'localhost:7892'
@@ -83,6 +84,12 @@ def rainbow_2D_init(room:env.Room, f_vars:dict, config:dict):
     f_vars['tickers']['pos'] = create_ticker(init=0, stepover=config['stepover'], max=512)
     return room, f_vars, config
 
+@pattern_init
+def rainbow_2D_vec_init(room:env.Room, f_vars:dict, config:dict):
+    f_vars['tickers']['pos'] = create_ticker(init=0, stepover=config['stepover'], max=512)
+    f_vars['direction'] = input('Enter unit circle direction in degrees (0-360): ')
+    return room, f_vars, config
+
 @pattern ## TODO add support for multiple maps
 def rainbow_2D(room:env.Room, f_vars:dict, config:dict):
     map_2D = list(room.maps_2D.values())[0] 
@@ -94,10 +101,11 @@ def rainbow_2D(room:env.Room, f_vars:dict, config:dict):
         elif pxdir == 'right': offset -= x
         elif pxdir == 'down': offset += y
         elif pxdir == 'up': offset -= y
-        # else:
-        #     try:
-        #         vecdir = float(pxdir)
-        #         offset += 
+        else: # direction in degrees, unit circle
+            try:
+                vecdir = float(pxdir)
+                offset += x*math.cos(vecdir) + y*math.sin(vecdir)
+            except: pass
 
         hue = offset*config['pitch'] % (2**room.color_bits)
         return cu.hsv2rgb(hue, 1.0, config['brightness'])
