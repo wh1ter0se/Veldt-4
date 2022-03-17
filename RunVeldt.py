@@ -69,7 +69,10 @@ veldt.add_display_modes('2D Patterns', [
     DisplayMode(
         dm_vars={'label':'Vector Rainbow', 'func':cp.rainbow_2D, 'init_func':cp.rainbow_2D_vec_init},
         configs={'default':{'stepover':0.5, 'pitch':3.0, 'direction':'down',
-                 'brightness':1.0}})])
+                 'brightness':1.0}}),
+    DisplayMode(
+        dm_vars={'label':'Spinning Rainbow', 'func':cp.spinning_rainbow_2D, 'init_func':cp.spinning_rainbow_2D_init},
+        configs={'default':{'stepover':0.5, 'angle_stepover':1.0, 'pitch':3.0, 'brightness':1.0}})])
     
 
 veldt.start()

@@ -112,3 +112,23 @@ def rainbow_2D(room:env.Room, f_vars:dict, config:dict):
 
     room.pixels = map_2D.get_pixels_from_func(func_2D)
     return room, f_vars
+
+@pattern_init
+def spinning_rainbow_2D_init(room:env.Room, f_vars:dict, config:dict):
+    f_vars['tickers']['pos'] = create_ticker(init=0, stepover=config['stepover'], max=512)
+    f_vars['tickers']['dir'] = create_ticker(init=0, stepover=config['angle_stepover'], max=360)
+    return room, f_vars, config
+
+@pattern ## TODO add support for multiple maps
+def spinning_rainbow_2D(room:env.Room, f_vars:dict, config:dict):
+    map_2D = list(room.maps_2D.values())[0] 
+
+    def func_2D(x:float, y:float):
+        offset = f_vars['tickers']['pos']['value']
+        vecdir = f_vars['tickers']['dir']['value']
+        offset += x*math.cos(vecdir) + y*math.sin(vecdir)
+        hue = offset*config['pitch'] % (2**room.color_bits)
+        return cu.hsv2rgb(hue, 1.0, config['brightness'])
+
+    room.pixels = map_2D.get_pixels_from_func(func_2D)
+    return room, f_vars
