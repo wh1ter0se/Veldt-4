@@ -1,7 +1,7 @@
 from typing import Callable
 from devices.MSGEQ7 import MSGEQ7
 import numpy as np
-import CommonPatterns as cp
+from utils import Color as cu
 
 class Strip():
     # Lengths should be a list of ints in order to support brdiges in the strip
@@ -36,7 +36,7 @@ class Strip():
         self.pixels[strip_pos] = (int(r),int(g),int(b))
 
     def set_pixel_hsv(self,strip_pos,hsv,color_bits=None):
-        rgb = cp.hsv2rgb(*hsv,color_bits)
+        rgb = cu.hsv2rgb(*hsv,color_bits)
         self.set_pixel_rgb(strip_pos, rgb)
 
     def fill_rgb(self,rgb,color_bits=None):
