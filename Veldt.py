@@ -1,5 +1,6 @@
 import sys, os
 import DisplayMode
+import utils.Graphing as graph
 from Room import House, Room
 from devices.FadeCandy import FadeCandy
 
@@ -7,7 +8,7 @@ from devices.FadeCandy import FadeCandy
 #     os.system('cls' if os.name=='nt' else 'clear')
 
 class Veldt():
-    def __init__(self, houses:House or list=None):
+    def __init__(self, houses:House or list=None, plot=False,):
         if houses is None: self.houses = []  
         elif type(houses) == House: self.houses = [houses]
         elif type(houses) == list: self.houses = houses
@@ -141,3 +142,7 @@ class Veldt():
                                 self.lines_written += 1
                             elif choice == 'exit': break
                         except KeyboardInterrupt: break
+
+    class VeldtPlot():
+        def __init__(self):
+            self.fig = graph.get_figure()

@@ -9,13 +9,9 @@ class MSGEQ7():
         self.stereo = stereo
         self.stale_buffer = stale_buffer
         
-        try:
-            print(f'[MSGEQ7]: Opening serial port \'{self.port}\'.')
-            self.ser = Serial(self.port,115200,timeout=1)
-            # self.ser.flush()
-            print(f'[MSGEQ7]: Serial port \'{self.port}\' opened.')
+        try: self.ser = Serial(self.port,115200,timeout=1)
         except:
-            print(f'[MSGEQ7] Serial port \'{self.port}\' could not be opened.')
+            print(f'[MSGEQ7]: Serial port \'{self.port}\' could not be opened.')
             raise
 
         self.bands = 14 if self.stereo else 7

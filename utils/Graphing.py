@@ -5,6 +5,9 @@ import numpy as np
 import sys, math
 sys.path.insert(0, './utils')
 
+def get_figure():
+    return plt.figure()
+
 def graph_2D_func(func_2D, height, width, fig, x_start=0, y_start=0):
     # ticker = 0
     # plt.ion()
